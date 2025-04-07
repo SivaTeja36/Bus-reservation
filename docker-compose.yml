@@ -16,14 +16,3 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-  rabbitmq:
-    image: rabbitmq:management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ${RABBITMQ_DATA_PATH}:/data
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
