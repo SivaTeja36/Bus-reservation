@@ -15,7 +15,7 @@ from app.models.ticket_models import (
 from app.services.ticket_service import TicketService
 
 router = APIRouter(
-    prefix="/buses", 
+    prefix="/tickets", 
     tags=["TICKET MANAGEMENT SERVICE"]
 )
 

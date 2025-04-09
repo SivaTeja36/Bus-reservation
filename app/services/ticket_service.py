@@ -119,7 +119,7 @@ class TicketService:
     
     def validate_ticket_exists(self, ticket: Ticket):
         """
-            Validate if company exists.
+            Validate if ticket exists.
         """        
         if not ticket:
             raise HTTPException(
