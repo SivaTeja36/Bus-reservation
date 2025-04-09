@@ -1,7 +1,10 @@
 import os
 from dotenv import load_dotenv
 
-from fastapi import Request
+from fastapi import (
+    HTTPException, 
+    Request
+)
 from jose import jwt
 
 from app.models.user_models import CurrentContextUser
@@ -51,5 +54,8 @@ async def verify_auth_token(request: Request):
         try:
             token = auth.strip().rsplit(".", 1)[0]
             request.state.user = __verify_jwt(token=token)
-        except Exception:
-            request.state.user = __verify_jwt(token=auth)
+        except Exception as e:
+            raise HTTPException(
+                status_code=401,
+                detail=str(e)
+            )
