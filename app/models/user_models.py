@@ -2,7 +2,8 @@ from datetime import datetime
 from typing import Optional
 from pydantic import (
     BaseModel, 
-    EmailStr
+    EmailStr,
+    PositiveInt
 )
 
 class UserCreationRequest(BaseModel):
@@ -11,7 +12,7 @@ class UserCreationRequest(BaseModel):
     password: str
     role: str
     contact: str
-    branch_id: int
+    branch_id: PositiveInt
 
 
 class UserCreationResponse(BaseModel):
