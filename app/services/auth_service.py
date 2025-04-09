@@ -42,7 +42,6 @@ class AuthService:
         claims = {
             "id": user.id,
             "name": user.name,
-            "email": user.email,
             "contact": user.contact,
             "role": user_role,
             "branch_id": user.branch_id,

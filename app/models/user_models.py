@@ -20,6 +20,7 @@ class UserCreationResponse(BaseModel):
     
 
 class CurrentContextUser():
-    username: str
     name: str
+    email: str
     role: str
+    branch_id: int

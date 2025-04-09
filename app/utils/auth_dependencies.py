@@ -26,7 +26,10 @@ def __verify_jwt(token: str):
     
     if user:
         cur_user = CurrentContextUser()
-        cur_user.username = str(user)
+        cur_user.name = payload.get("name")
+        cur_user.email = str(user)
+        cur_user.role = payload.get("role")
+        cur_user.branch_id = payload.get("branch_id")
         return cur_user
 
 
