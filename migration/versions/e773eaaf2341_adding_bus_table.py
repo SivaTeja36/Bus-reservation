@@ -21,20 +21,10 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['branch_id'], ['branches.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.alter_column('users', 'role',
-               existing_type=sa.INTEGER(),
-               type_=sa.String(length=50),
-               existing_nullable=False)
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # Drop the buses table
     op.drop_table('buses')
-    
-    # Revert the users table change
-    op.alter_column('users', 'role',
-               existing_type=sa.String(length=50),
-               type_=sa.INTEGER(),
-               existing_nullable=False)
     # ### end Alembic commands ###

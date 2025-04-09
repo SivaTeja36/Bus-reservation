@@ -15,14 +15,14 @@ class UserService:
     def create_user(
         self, 
         name: str, 
-        username: EmailStr, 
+        email: EmailStr, 
         password: str, 
         role: str, 
         contact: str
     ) -> User:
         user = User(
             name=name, 
-            username=username, 
+            email=email, 
             password=password, 
             role=role, 
             contact=contact
@@ -36,11 +36,11 @@ class UserService:
     def get_all_users(self):
         return self.db.query(User).all()
 
-    def validate_user(self, username: EmailStr, password: str) -> User | None:
+    def validate_user(self, email: EmailStr, password: str) -> User | None:
         # this logic should be remvoed once we create some users.
         if self.db.query(User).count() == 0:
             return self.create_user(
-                name=username.split("@")[0],
+                name=email.split("@")[0],
                 username=username,
                 password=password,
                 role=Roles.SuperAdmin,
