@@ -1,14 +1,17 @@
 import os
 from datetime import datetime
+from dotenv import load_dotenv
 import traceback
+
 from fastapi import Request
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
-from dotenv import load_dotenv
-import os
-from app.utils.constants import (
-    AUTHORIZATION, 
+from sqlalchemy.orm import (
+    sessionmaker, 
+    Session
+)
+
+from app.utils.constants import ( 
     MASTER_SCHEMA
 )
 
@@ -37,7 +40,7 @@ Base = declarative_base(metadata=sa.MetaData())
 
 class TenantNotFoundError(Exception):
     def __init__(self, id):
-        self.message = "Tenant %s not found!" % str(id)
+        self.message = f"Tenant with ID '{id}' not found!"
         super().__init__(self.message)
 
 
@@ -55,6 +58,7 @@ def build_db_session(schema: str) -> Session:
     connectable.dialect.default_schema_name = schema
     db = sessionmaker(bind=connectable, expire_on_commit=False)()
     db.execute(sa.text('set search_path to "%s"' % schema))
+
     return db
 
 
@@ -63,16 +67,17 @@ def get_connected_schema(db: Session) -> str:
 
 
 def get_tenant_db(request: Request):
-    toekn = request.headers.get(AUTHORIZATION) or ""
-    access_key = toekn.replace("Bearer ", "").split(".").pop()
+    branch_id = request.state.user.branch_id
     master_db = get_master_database()
+
     result = master_db.execute(
-        sa.text("SELECT schema FROM companies WHERE access_key='" + access_key + "';")
+        sa.text("SELECT schema FROM branches WHERE id='" + branch_id + "';")
     ).fetchall()
+
     master_db.close()
 
     if not result or not result[0] or not result[0][0]:
-        raise TenantNotFoundError(access_key)
+        raise TenantNotFoundError(branch_id)
     
     print("transaction starting, opening db. ", datetime.now())
     db = build_db_session(result[0][0])
@@ -87,12 +92,14 @@ def get_tenant_db(request: Request):
             db.rollback()
         finally:
             db.close()
+
         print("transaction completed, closing db. ", datetime.now())
 
 
 def get_master_db():
     print("transaction starting, opening master db. ", datetime.now())
     db = get_master_database()
+
     try:
         yield db
     finally:
@@ -103,4 +110,5 @@ def get_master_db():
             db.rollback()
         finally:
             db.close()
+
         print("transaction completed, closing master db. ", datetime.now())

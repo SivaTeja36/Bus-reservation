@@ -13,7 +13,7 @@ class User(Base):
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False)
     name: str = sa.Column(sa.String(50), nullable=False)
     email: str = sa.Column(sa.String(100), nullable=False, index=True, unique=True)
-    __password: str = sa.Column(name="password", type_=sa.String(20), nullable=False, index=True)
+    __password: str = sa.Column(name="password", type_=sa.String(200), nullable=False, index=True)
     contact: str = sa.Column(sa.String(50), nullable=False, unique=True)
     role: str = sa.Column(sa.String(50), nullable=False)
     branch_id: int = sa.Column(sa.Integer, sa.ForeignKey("branches.id"), nullable=True)

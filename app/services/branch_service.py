@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 import traceback
 import argparse
+from typing import List
 from automapper import mapper
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
 from alembic import (
@@ -20,11 +21,14 @@ from app.connectors.database_connector import (
 from app.entities.branch import Branch
 from app.models.branch_models import (
     BranchRequest, 
-    BranchResponse
+    BranchResponse,
+    GetBranchResponse
 )
 from app.utils.constants import (
-    BRANCH_CREATED_SUCCESSFULLY, 
-    DB_NOT_UPTODATE
+    BRANCH_CREATED_SUCCESSFULLY,
+    CITY_NAME_ALREADY_EXISTS, 
+    DB_NOT_UPTODATE,
+    DOMAIN_NAME_ALREADY_EXISTS
 )
 from app.utils.utils import (
     get_project_root, 
@@ -87,11 +91,31 @@ class BranchService:
         finally:
             db.close()
 
+    def validate_branch_name(self, city_name: str) -> bool:
+        existing_branch = self.db.query(Branch).filter(sa.func.lower(Branch.city) == city_name.lower()).first()
+
+        if existing_branch:
+            raise HTTPException(
+                status_code=400, 
+                detail=CITY_NAME_ALREADY_EXISTS
+            )
+    
+    def validate_domain_name(self, domain_name: str) -> bool:
+        existing_domain = self.db.query(Branch).filter(sa.func.lower(Branch.domain_name) == domain_name.lower()).first()
+
+        if existing_domain:
+            raise HTTPException(
+                status_code=400, 
+                detail=DOMAIN_NAME_ALREADY_EXISTS
+            )
+
     def create_branch(self, request: BranchRequest) -> Branch:
+        self.validate_branch_name(request.city)
+        self.validate_domain_name(request.domain_name)
+
         schema = get_randome_str()
 
         branch = Branch(
-            name=request.name,
             city=request.city,
             domain_name=request.domain_name,
             schema=schema,
@@ -108,4 +132,8 @@ class BranchService:
 
     def get_branch(self, id: int) -> Branch:
         branch = self.db.query(Branch).filter(Branch.id == id).first() 
-        return mapper.to(BranchResponse).map(branch)
+        return mapper.to(GetBranchResponse).map(branch)
+    
+    def get_all_branch(self) -> List[GetBranchResponse]:
+        branches = self.db.query(Branch).all() 
+        return [mapper.to(GetBranchResponse).map(branch) for branch in branches]

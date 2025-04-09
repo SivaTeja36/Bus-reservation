@@ -16,3 +16,4 @@ class LoginResponse(BaseModel):
     email: EmailStr
     role: str
     contact: str
+    jwt_token: str

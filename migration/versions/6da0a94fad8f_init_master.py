@@ -11,6 +11,7 @@ import sqlalchemy as sa
 
 from app.utils.constants import MASTER_SCHEMA
 from app.utils.enums import Roles
+from app.utils.hasher import Hasher
 from app.utils.utils import get_randome_str
 
 
@@ -20,6 +21,10 @@ down_revision = None
 branch_labels = None
 depends_on = None
 schema_name = get_randome_str()
+user_name = "Siva Teja"
+urer_email = "siva.teja@in.nspglobaltech.com"
+user_password = Hasher.get_password_hash("String@123")
+user_contact = "1234567890"
 
   
 def upgrade() -> None:
@@ -36,7 +41,6 @@ def upgrade() -> None:
     op.create_table(
         "branches",
         sa.Column("id", sa.Integer(), nullable=False, autoincrement=True),
-        sa.Column("name", sa.String(length=50), nullable=False),
         sa.Column("city", sa.String(length=50), nullable=False),
         sa.Column("domain_name", sa.String(length=10), nullable=False),
         sa.Column("schema", sa.String(length=50), nullable=False),
@@ -52,7 +56,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False, autoincrement=True),
         sa.Column("name", sa.String(length=50), nullable=False),
         sa.Column("email", sa.String(length=100), nullable=False),
-        sa.Column("password", sa.String(length=20), nullable=False),
+        sa.Column("password", sa.String(length=200), nullable=False),
         sa.Column("contact", sa.String(length=50), nullable=False),
         sa.Column("role", sa.String(length=50), nullable=False),
         sa.Column("branch_id", sa.Integer(), nullable=True),
@@ -70,7 +74,6 @@ def upgrade() -> None:
     # Insert initial branch data
     branch_insert = sa.sql.table(
         'branches',
-        sa.sql.column('name', sa.String),
         sa.sql.column('city', sa.String),
         sa.sql.column('domain_name', sa.String),
         sa.sql.column('schema', sa.String),
@@ -86,7 +89,6 @@ def upgrade() -> None:
         branch_insert,
         [
             {
-                "name": "Bus Travels",
                 "city": "Kadapa",
                 "domain_name": "kdp",
                 "schema": schema_name.lower(),
@@ -100,7 +102,7 @@ def upgrade() -> None:
     
     # Get the branch ID for user creation
     branch_id_result = conn.execute(
-        sa.text(f"SELECT id FROM {MASTER_SCHEMA}.branches WHERE name = 'Bus Travels' LIMIT 1")
+        sa.text(f"SELECT id FROM {MASTER_SCHEMA}.branches WHERE city = 'Kadapa' LIMIT 1")
     ).fetchone()
     branch_id = branch_id_result[0] if branch_id_result else None
     
@@ -123,10 +125,10 @@ def upgrade() -> None:
         user_insert,
         [
             {
-                "name": "Super Admin",  # Using a string instead of Roles.SuperAdmin for clarity
-                "email": "siva.teja@in.nspglobaltech.com",
-                "password": "String@123",
-                "contact": "1234567890",
+                "name": user_name,  # Using a string instead of Roles.SuperAdmin for clarity
+                "email": urer_email,
+                "password": user_password,
+                "contact": user_contact,
                 "role": Roles.SuperAdmin,  # Assuming Roles.SuperAdmin is a string like this
                 "branch_id": branch_id,
                 "created_at": now,

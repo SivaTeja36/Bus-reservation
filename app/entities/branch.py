@@ -10,7 +10,6 @@ class Branch(Base):
     __tablename__ = "branches"
 
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False) 
-    name: str = sa.Column(sa.String(50), nullable=False) 
     city: str = sa.Column(sa.String(50), nullable=False)
     domain_name: str = sa.Column(sa.String(10), nullable=False)
     schema: str = sa.Column(sa.String(50), nullable=False) 

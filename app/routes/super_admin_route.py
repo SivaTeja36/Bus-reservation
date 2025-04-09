@@ -1,4 +1,5 @@
-from automapper import mapper
+from typing import List
+
 from fastapi import (
     APIRouter, 
     Depends,
@@ -8,7 +9,8 @@ from fastapi import (
 from app.models.base_response_model import ApiResponse
 from app.models.branch_models import (
     BranchRequest, 
-    BranchResponse
+    BranchResponse,
+    GetBranchResponse
 )
 from app.models.user_models import (
     UserCreationRequest, 
@@ -21,8 +23,8 @@ router = APIRouter(prefix="/admin", tags=["BRANCH MANAGEMENT SERVICE"])
 
 
 @router.post(
-    "/branch",
-    response_model=ApiResponse[BranchRequest],
+    "/branches",
+    response_model=ApiResponse[BranchResponse],
     status_code=status.HTTP_201_CREATED,
 )
 async def create_organization(
@@ -33,19 +35,30 @@ async def create_organization(
 
 
 @router.get(
-    "/branch/{id}", 
-    response_model=ApiResponse[BranchResponse], 
+    "/branches", 
+    response_model=ApiResponse[List[GetBranchResponse]], 
+    status_code=status.HTTP_200_OK
+)
+async def get_organization(
+    service: BranchService = Depends(BranchService)
+) -> ApiResponse[List[GetBranchResponse]]:
+    return ApiResponse(data=service.get_all_branch())
+
+
+@router.get(
+    "/branches/{id}", 
+    response_model=ApiResponse[GetBranchResponse], 
     status_code=status.HTTP_200_OK
 )
 async def get_organization(
     id: int, 
     service: BranchService = Depends(BranchService)
-) -> ApiResponse[BranchResponse]:
+) -> ApiResponse[GetBranchResponse]:
     return ApiResponse(data=service.get_branch(id))
 
 
 @router.post(
-    "/user", 
+    "/users", 
     response_model=ApiResponse[UserCreationResponse], 
     status_code=status.HTTP_201_CREATED
 )
