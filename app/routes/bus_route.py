@@ -86,7 +86,7 @@ async def delete_bus_by_id(
     response_model=ApiResponse[BusResponse],
     status_code=status.HTTP_201_CREATED,
 )
-async def create_bus(
+async def create_bus_schedule(
     request: BusScheduleRequest, 
     service: BusService = Depends(BusService)
 ) -> ApiResponse[BusResponse]:

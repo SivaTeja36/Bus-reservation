@@ -4,6 +4,7 @@ from pydantic import (
     PositiveInt
 )
 
+from app.models.company_models import GetCompanyResponse
 from app.utils.enums import BusTypeEnum
 
 
@@ -26,6 +27,7 @@ class GetBusResponse(BaseModel):
     total_seats: int
     created_at: datetime
     is_active: bool
+    company_data: GetCompanyResponse
 
 
 class BusScheduleRequest(BaseModel):
