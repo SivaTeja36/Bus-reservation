@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import (
     APIRouter, 
     Depends,
@@ -33,12 +34,12 @@ async def create_bus(
 
 @router.get(
     "",
-    response_model=ApiResponse[BusResponse],
-    status_code=status.HTTP_201_CREATED,
+    response_model=ApiResponse[List[GetBusResponse]],
+    status_code=status.HTTP_200_OK,
 )
 async def get_all_buses( 
     service: BusService = Depends(BusService)
-) -> ApiResponse[BusResponse]:
+) -> ApiResponse[List[GetBusResponse]]:
     return ApiResponse(data=service.get_all_buses())
 
 
