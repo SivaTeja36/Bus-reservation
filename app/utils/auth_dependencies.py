@@ -39,7 +39,8 @@ async def verify_auth_token(request: Request):
     """
     non_authenticated_paths = {"login", "refresh"}
     protected_paths = {
-        "admin", "companies", "buses"
+        "admin", "companies", "buses", 
+        "tickets"
     }
     
     if not any(path in request.url.path for path in non_authenticated_paths) and any(
