@@ -23,6 +23,9 @@ schema_name = get_randome_str()
 
   
 def upgrade() -> None:
+    if op.get_context().dialect.default_schema_name != MASTER_SCHEMA:
+        pass
+        return
     # Create the schema and commit it immediately
     # This ensures the schema exists before we try to create tables in it
     conn = op.get_bind()
@@ -135,6 +138,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    if op.get_context().dialect.default_schema_name != MASTER_SCHEMA:
+        pass
+        return
     # Get the schema name from the database
     conn = op.get_bind()
     result = conn.execute(

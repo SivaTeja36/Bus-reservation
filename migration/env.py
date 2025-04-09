@@ -106,7 +106,7 @@ def run_migrations_online():
     with engine.connect() as connection:
         if not is_autogenerating :
             if targeted_schema:
-                schemas = list[str](map(lambda row: row[0],connection.execute(text("SELECT schema FROM public.companies")).fetchall()))
+                schemas = list[str](map(lambda row: row[0],connection.execute(text("SELECT schema FROM public.branches")).fetchall()))
                 if targeted_schema in schemas:
                     translated = MetaData(schema=targeted_schema)
                 else:
