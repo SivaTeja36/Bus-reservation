@@ -41,7 +41,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=100), nullable=False),
         sa.Column("password", sa.String(length=20), nullable=False),
         sa.Column("contact", sa.String(length=50), nullable=False),
-        sa.Column("role", sa.Integer(), nullable=False),
+        sa.Column("role", sa.String(length=50), nullable=False),
         sa.Column("branch_id", sa.Integer(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
