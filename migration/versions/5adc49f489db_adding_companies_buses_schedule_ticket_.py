@@ -47,6 +47,7 @@ def upgrade() -> None:
         )
         op.create_table('tickets',
         sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('ticket_number', sa.String(length=50), nullable=False),
         sa.Column('bus_id', sa.Integer(), nullable=False),
         sa.Column('seat_number', sa.Integer(), nullable=False),
         sa.Column('passenger_name', sa.String(length=50), nullable=False),
@@ -56,7 +57,8 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(['bus_id'], ['buses.id'], ),
-        sa.PrimaryKeyConstraint('id')
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint("ticket_number")
         )
         # ### end Alembic commands ###
 

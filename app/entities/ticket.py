@@ -9,6 +9,7 @@ class Ticket(Base):
     __tablename__ = "tickets"
 
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False) 
+    ticket_number: str = sa.Column(sa.String(50), nullable=False, unique=True)
     bus_id: int = sa.Column(sa.Integer, sa.ForeignKey("buses.id"), nullable=False)
     seat_number: int = sa.Column(sa.Integer, nullable=False) 
     passenger_name: str = sa.Column(sa.String(50), nullable=False)
