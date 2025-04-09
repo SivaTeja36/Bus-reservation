@@ -5,5 +5,6 @@ from .route import Route
 from .bus import Bus
 from .schedule import Schedule
 from .ticket import Ticket
+from .company import Company
 
 # import your application specific entities here for creating migration scripts automatically (alembic)

@@ -9,7 +9,7 @@ class Bus(Base):
     __tablename__ = "buses"
 
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False) 
-    branch_id: int = sa.Column(sa.Integer, sa.ForeignKey("branches.id"), nullable=False) 
+    company_id: int = sa.Column(sa.Integer, sa.ForeignKey("companies.id"), nullable=False) 
     bus_number: str = sa.Column(sa.String(10), nullable=False)
     bus_type: str = sa.Column(sa.String(10), nullable=False) 
     total_seats: int = sa.Column(sa.Integer, nullable=False)
