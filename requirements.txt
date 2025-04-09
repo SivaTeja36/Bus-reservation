@@ -12,8 +12,9 @@ anyio>=3.7.0
 httpx>=0.24.1
 passlib[bcrypt]>=1.7.4
 typeguard>=4.0.0
-python-jose[cryptography]>=3.3.0
+python-jose[cryptography]>=3.3.0``
 requests>=2.31.0
 sqlalchemy>=2.0.18
 schedule>=1.2.0
 pytest
+python-multipart==0.0.6
