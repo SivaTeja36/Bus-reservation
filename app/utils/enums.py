@@ -1,5 +1,5 @@
-from enum import Enum
+from enum import StrEnum
 
-class Roles(Enum):
-    SuperAdmin = 99
-    Admin = 2
+class Roles(StrEnum):
+    SuperAdmin = "Super Admin"
+    Admin = "Admin"

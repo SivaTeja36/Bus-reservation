@@ -4,6 +4,7 @@ from fastapi import (
     Depends,
     status
 )
+
 from app.models.base_response_model import ApiResponse
 from app.models.branch_models import (
     BranchRequest, 
@@ -28,7 +29,7 @@ async def create_organization(
     request: BranchRequest, 
     service: BranchService = Depends(BranchService)
 ) -> ApiResponse[BranchResponse]:
-    return ApiResponse(data=service.create_branch(request.name))
+    return ApiResponse(data=service.create_branch(request))
 
 
 @router.get(
@@ -38,7 +39,7 @@ async def create_organization(
 )
 async def get_organization(
     id: int, 
-    service:BranchService = Depends(BranchService)
+    service: BranchService = Depends(BranchService)
 ) -> ApiResponse[BranchResponse]:
     return ApiResponse(data=service.get_branch(id))
 

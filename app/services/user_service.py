@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.connectors.database_connector import get_master_db
 from app.entities.user import User
+from app.utils.enums import Roles
 
 
 @dataclass
@@ -19,12 +20,13 @@ class UserService:
         role: str, 
         contact: str
     ) -> User:
-        user = User()
-        user.name = name
-        user.username = username
-        user.password = password
-        user.role = role
-        user.contact = contact
+        user = User(
+            name=name, 
+            username=username, 
+            password=password, 
+            role=role, 
+            contact=contact
+        )
 
         self.db.add(user)
         self.db.commit()
@@ -41,7 +43,7 @@ class UserService:
                 name=username.split("@")[0],
                 username=username,
                 password=password,
-                role="SuperAdmin",
+                role=Roles.SuperAdmin,
                 contact="0987654321",
             )
         

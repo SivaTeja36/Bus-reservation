@@ -11,25 +11,19 @@ class User(Base):
     __tablename__ = "users"
 
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False)
-    name: str = sa.Column(sa.String(256), nullable=False)
-    username: str = sa.Column(sa.String(256), nullable=False, index=True, unique=True)
-    __password: str = sa.Column(name="password", type_=sa.String(500), nullable=False, index=True)
-    contact: str = sa.Column(sa.String(500), nullable=False, unique=True)
-    __role: int = sa.Column(name="role", type_=sa.Integer, nullable=False)
+    name: str = sa.Column(sa.String(50), nullable=False)
+    email: str = sa.Column(sa.String(100), nullable=False, index=True, unique=True)
+    __password: str = sa.Column(name="password", type_=sa.String(20), nullable=False, index=True)
+    contact: str = sa.Column(sa.String(50), nullable=False, unique=True)
+    __role: int = sa.Column(name="role", type_=sa.String(15), nullable=False)
+    branch_id: int = sa.Column(sa.Integer, sa.ForeignKey("branches.id"), nullable=True)
     created_at: datetime = sa.Column(sa.DateTime, nullable=False, default=sa.func.now())
+    updated_at: datetime = sa.Column(sa.DateTime, nullable=False, default=sa.func.now())
     is_active: bool = sa.Column(sa.Boolean, nullable=False, default=True)
     
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute, use verify_password method for verifying')
-    
-    @property
-    def role(self):
-        return Roles(self.__role).name
-    
-    @role.setter
-    def role(self, role_from:str):
-        self.__role = Roles[role_from].value
     
     @password.setter
     def password(self, password:str):

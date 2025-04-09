@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import traceback
-import uuid
 import argparse
 from automapper import mapper
+
 from fastapi import Depends
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
@@ -12,13 +12,20 @@ from alembic import (
 )
 from alembic.config import Config
 from alembic.migration import MigrationContext
+
 from app.connectors.database_connector import (
     get_master_database, 
     get_master_db
 )
 from app.entities.branch import Branch
-from app.models.branch_models import BranchResponse
-from app.utils.constants import DB_NOT_UPTODATE
+from app.models.branch_models import (
+    BranchRequest, 
+    BranchResponse
+)
+from app.utils.constants import (
+    BRANCH_CREATED_SUCCESSFULLY, 
+    DB_NOT_UPTODATE
+)
 from app.utils.utils import (
     get_project_root, 
     get_randome_str
@@ -80,22 +87,25 @@ class BranchService:
         finally:
             db.close()
 
-    def create_branch(self, name: str) -> Branch:
+    def create_branch(self, request: BranchRequest) -> Branch:
         schema = get_randome_str()
-        tenant = Branch()
-        tenant.name = name
-        tenant.logo_path = "none"
-        tenant.schema = schema
-        tenant.access_key = uuid.uuid4().hex
+
+        branch = Branch(
+            name=request.name,
+            city=request.city,
+            domain_name=request.domain_name,
+            schema=schema,
+        )
+    
         self.db.execute(sa.schema.CreateSchema(schema, True))
-        self.db.add(tenant)
+        self.db.add(branch)
         self.db.commit()
 
         current_head = BranchService.__get_current_head(self.db)
         BranchService.__upgrade(schema, current_head)
 
-        return mapper.to(BranchResponse).map(tenant)
+        return BranchResponse(message=BRANCH_CREATED_SUCCESSFULLY)
 
     def get_branch(self, id: int) -> Branch:
-        branch = self.db.query(Branch).filter(Branch.id == id).first()  # type: ignore
+        branch = self.db.query(Branch).filter(Branch.id == id).first() 
         return mapper.to(BranchResponse).map(branch)
