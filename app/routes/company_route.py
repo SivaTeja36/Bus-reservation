@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import (
     APIRouter, 
     Depends,
@@ -33,12 +34,12 @@ async def create_company(
 
 @router.get(
     "",
-    response_model=ApiResponse[CompanyResponse],
-    status_code=status.HTTP_201_CREATED,
+    response_model=ApiResponse[List[GetCompanyResponse]],
+    status_code=status.HTTP_200_OK,
 )
 async def get_all_companies(
     service: CompanyService = Depends(CompanyService)
-) -> ApiResponse[CompanyResponse]:
+) -> ApiResponse[List[GetCompanyResponse]]:
     return ApiResponse(data=service.get_all_companies())
 
 
