@@ -46,18 +46,11 @@ async def get_organization(
 
 @router.post(
     "/user", 
-    response_model=UserCreationResponse, 
+    response_model=ApiResponse[UserCreationResponse], 
     status_code=status.HTTP_201_CREATED
 )
 async def create_user(
     request: UserCreationRequest, 
     service: UserService = Depends(UserService)
 ) -> UserCreationResponse:
-    user = service.create_user(
-        request.name,
-        request.username,
-        request.password,
-        request.role,
-        request.contact,
-    )
-    return mapper.to(UserCreationResponse).map(user)
+    return ApiResponse(service.create_user(request))

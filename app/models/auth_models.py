@@ -7,12 +7,11 @@ from pydantic import (
 
 
 class LoginRequest(BaseModel):
-    userName: EmailStr
+    email: EmailStr
     password: str
 
 
 class LoginResponse(BaseModel):
-    id: int
     name: str
     email: EmailStr
     role: str

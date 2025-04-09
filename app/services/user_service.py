@@ -1,55 +1,46 @@
 from dataclasses import dataclass
 from fastapi import Depends
-from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from app.connectors.database_connector import get_master_db
 from app.entities.user import User
-from app.utils.enums import Roles
+from app.models.user_models import (
+    UserCreationRequest, 
+    UserCreationResponse
+)
+from app.utils.constants import USER_CREATED_SUCCESSFULLY
 
 
 @dataclass
 class UserService:
     db: Session = Depends(get_master_db)
 
-    def create_user(
-        self, 
-        name: str, 
-        email: EmailStr, 
-        password: str, 
-        role: str, 
-        contact: str
-    ) -> User:
+    def get_active_user_by_email(self, email: str) -> User | None:
+        """
+            Retrieve a user by their email address.
+        """
+        return (
+            self.db.query(User)
+            .filter(
+                User.email == email,
+                User.is_active == True
+            ).first()   
+        )
+
+    def create_user(self, request: UserCreationRequest) -> User:
         user = User(
-            name=name, 
-            email=email, 
-            password=password, 
-            role=role, 
-            contact=contact
+            name=request.name,
+            email=request.email,
+            password=request.password,
+            role=request.role,
+            contact=request.contact,
+            branch_id=request.branch_id
         )
 
         self.db.add(user)
         self.db.commit()
 
-        return user
-
+        return UserCreationResponse(message=USER_CREATED_SUCCESSFULLY)
+    
     def get_all_users(self):
         return self.db.query(User).all()
-
-    def validate_user(self, email: EmailStr, password: str) -> User | None:
-        # this logic should be remvoed once we create some users.
-        if self.db.query(User).count() == 0:
-            return self.create_user(
-                name=email.split("@")[0],
-                username=username,
-                password=password,
-                role=Roles.SuperAdmin,
-                contact="0987654321",
-            )
-        
-        user = self.db.query(User).where(User.username == username).first()  # type: ignore
-        
-        if user and user.verify_password(password):
-            return user
-        else:
-            return None

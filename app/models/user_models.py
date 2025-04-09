@@ -11,17 +11,11 @@ class UserCreationRequest(BaseModel):
     password: str
     role: str
     contact: str
-    branch_id: Optional[int] = None
+    branch_id: int
 
 
 class UserCreationResponse(BaseModel):
-    id: int
-    name: str 
-    username: str 
-    contact: str
-    role: str
-    created_at: datetime
-    is_active: bool
+    message: str
     
 
 class CurrentContextUser():
