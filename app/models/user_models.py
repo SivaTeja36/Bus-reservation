@@ -1,18 +1,24 @@
-from datetime import datetime
-from typing import Optional
 from pydantic import (
     BaseModel, 
     EmailStr,
-    PositiveInt
+    PositiveInt,
+    Field,
+    validator
 )
+
+from app.utils.validators import validate_password
 
 class UserCreationRequest(BaseModel):
     name: str
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8, max_length=16)
     role: str
     contact: str
     branch_id: PositiveInt
+
+    @validator("password")
+    def validate_set_password(cls, password: str):
+        return validate_password(password)
 
 
 class UserCreationResponse(BaseModel):
