@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 from app.connectors.database_connector import (
     get_tenant_db
 )
-from app.entities.branch import Branch
 from app.entities.company import Company
 from app.models.company_models import (
     CompanyRequest, 
@@ -87,6 +86,13 @@ class CompanyService:
             message=COMPANY_CREATED_SUCCESSFULLY
         )
     
+    def get_all_companies(self) -> list[GetCompanyResponse]:
+        """
+            Get all companies from the database.
+        """
+        companies = self.db.query(Company).all()
+        return [mapper.to(GetCompanyResponse).map(company) for company in companies]
+    
     def validate_company_exists(self, company: Company):
         """
             Validate if company exists.
@@ -140,6 +146,7 @@ class CompanyService:
         company.email = request.email
         company.address = request.address
         company.phone_number = request.phone_number
+        company.updated_at = func.now()
 
         self.db.commit()
 

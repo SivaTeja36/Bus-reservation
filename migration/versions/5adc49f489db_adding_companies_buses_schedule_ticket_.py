@@ -28,6 +28,7 @@ def upgrade() -> None:
         sa.Column('bus_type', sa.String(length=10), nullable=False),
         sa.Column('total_seats', sa.Integer(), nullable=False),
         sa.Column('created_at', sa.DateTime(), nullable=False),
+        sa.Column('updated_at', sa.DateTime(), nullable=False),
         sa.Column('is_active', sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
         sa.PrimaryKeyConstraint('id')

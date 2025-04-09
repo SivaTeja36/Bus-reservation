@@ -1,0 +1,28 @@
+from datetime import datetime
+from pydantic import (
+    BaseModel, 
+    PositiveInt
+)
+
+from app.utils.enums import BusTypeEnum
+
+
+class BusRequest(BaseModel):
+    company_id: PositiveInt 
+    bus_number: str 
+    bus_type: BusTypeEnum 
+    total_seats: PositiveInt
+
+
+class BusResponse(BaseModel):
+    message: str
+
+
+class GetBusResponse(BaseModel):
+    id: int
+    company_id: int
+    bus_number: str
+    bus_type: str
+    total_seats: int
+    created_at: datetime
+    is_active: bool

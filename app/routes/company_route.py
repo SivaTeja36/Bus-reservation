@@ -24,11 +24,22 @@ router = APIRouter(
     response_model=ApiResponse[CompanyResponse],
     status_code=status.HTTP_201_CREATED,
 )
-async def create_organization(
+async def create_company(
     request: CompanyRequest, 
     service: CompanyService = Depends(CompanyService)
 ) -> ApiResponse[CompanyResponse]:
     return ApiResponse(data=service.create_company(request))
+
+
+@router.get(
+    "",
+    response_model=ApiResponse[CompanyResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def get_all_companies(
+    service: CompanyService = Depends(CompanyService)
+) -> ApiResponse[CompanyResponse]:
+    return ApiResponse(data=service.get_all_companies())
 
 
 @router.get(

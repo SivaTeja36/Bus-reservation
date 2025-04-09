@@ -34,10 +34,16 @@ def __verify_jwt(token: str):
 
 
 async def verify_auth_token(request: Request):
-    if (
-        "login" not in request.url.path
-        and "refresh" not in request.url.path
-        and "admin" in request.url.path
+    """
+        Verify the authentication token in the request headers.
+    """
+    non_authenticated_paths = {"login", "refresh"}
+    protected_paths = {
+        "admin", "companies", "buses"
+    }
+    
+    if not any(path in request.url.path for path in non_authenticated_paths) and any(
+        path in request.url.path for path in protected_paths
     ):
         auth: str = request.headers.get(AUTHORIZATION) or ""
         

@@ -9,9 +9,10 @@ class Bus(Base):
     __tablename__ = "buses"
 
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False) 
-    company_id: int = sa.Column(sa.Integer, sa.ForeignKey("companies.id"), nullable=False) 
     bus_number: str = sa.Column(sa.String(10), nullable=False)
     bus_type: str = sa.Column(sa.String(10), nullable=False) 
     total_seats: int = sa.Column(sa.Integer, nullable=False)
+    company_id: int = sa.Column(sa.Integer, sa.ForeignKey("companies.id"), nullable=False) 
     created_at: datetime = sa.Column(sa.DateTime, nullable=False, default=sa.func.now()) 
+    updated_at: datetime = sa.Column(sa.DateTime, nullable=False, default=sa.func.now())
     is_active: bool = sa.Column(sa.Boolean, nullable=False, default=True) 
