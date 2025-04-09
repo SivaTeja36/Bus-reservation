@@ -92,7 +92,11 @@ class BranchService:
             db.close()
 
     def validate_branch_name(self, city_name: str) -> bool:
-        existing_branch = self.db.query(Branch).filter(sa.func.lower(Branch.city) == city_name.lower()).first()
+        existing_branch = (
+            self.db.query(Branch)
+            .filter(sa.func.lower(Branch.city) == city_name.lower())
+            .first()
+        )
 
         if existing_branch:
             raise HTTPException(
@@ -101,7 +105,11 @@ class BranchService:
             )
     
     def validate_domain_name(self, domain_name: str) -> bool:
-        existing_domain = self.db.query(Branch).filter(sa.func.lower(Branch.domain_name) == domain_name.lower()).first()
+        existing_domain = (
+            self.db.query(Branch)
+            .filter(sa.func.lower(Branch.domain_name) == domain_name.lower())
+            .first()
+        )
 
         if existing_domain:
             raise HTTPException(
