@@ -65,5 +65,5 @@ async def get_organization(
 async def create_user(
     request: UserCreationRequest, 
     service: UserService = Depends(UserService)
-) -> UserCreationResponse:
-    return ApiResponse(service.create_user(request))
+) -> ApiResponse[UserCreationResponse]:
+    return ApiResponse(data=service.create_user(request))

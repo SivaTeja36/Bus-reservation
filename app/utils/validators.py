@@ -1,6 +1,3 @@
-
-#┌────────────────────────────── FIELD VALIDATIONS ──────────────────────────────────────────┐
-
 from app.utils.constants import (
     ATLEAST_ONE_DIGIT, 
     ATLEAST_ONE_LOWER_CASE, 
@@ -9,6 +6,7 @@ from app.utils.constants import (
     SHOULD_NOT_CONTAIN_SPACES
 )
 
+#┌────────────────────────────── FIELD VALIDATIONS ──────────────────────────────────────────┐
 
 def validate_password(password: str) -> str:
     """
