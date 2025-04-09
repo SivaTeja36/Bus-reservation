@@ -27,7 +27,7 @@ router = APIRouter(prefix="/admin", tags=["BRANCH MANAGEMENT SERVICE"])
     response_model=ApiResponse[BranchResponse],
     status_code=status.HTTP_201_CREATED,
 )
-async def create_organization(
+async def create_branch(
     request: BranchRequest, 
     service: BranchService = Depends(BranchService)
 ) -> ApiResponse[BranchResponse]:
@@ -39,10 +39,10 @@ async def create_organization(
     response_model=ApiResponse[List[GetBranchResponse]], 
     status_code=status.HTTP_200_OK
 )
-async def get_organization(
+async def get_all_branches(
     service: BranchService = Depends(BranchService)
 ) -> ApiResponse[List[GetBranchResponse]]:
-    return ApiResponse(data=service.get_all_branch())
+    return ApiResponse(data=service.get_all_branches())
 
 
 @router.get(
@@ -50,11 +50,24 @@ async def get_organization(
     response_model=ApiResponse[GetBranchResponse], 
     status_code=status.HTTP_200_OK
 )
-async def get_organization(
+async def get_branch_by_id(
     id: int, 
     service: BranchService = Depends(BranchService)
 ) -> ApiResponse[GetBranchResponse]:
-    return ApiResponse(data=service.get_branch(id))
+    return ApiResponse(data=service.get_branch_by_id(id))
+
+
+@router.put(
+    "/branches/{id}", 
+    response_model=ApiResponse[BranchResponse], 
+    status_code=status.HTTP_200_OK
+)
+async def update_branch_by_id(
+    id: int, 
+    request: BranchRequest, 
+    service: BranchService = Depends(BranchService)
+) -> ApiResponse[BranchResponse]:
+    return ApiResponse(data=service.update_branch_by_id(id, request))
 
 
 @router.post(

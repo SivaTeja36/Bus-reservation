@@ -10,6 +10,7 @@ from app.models.base_response_model import ApiResponse
 from app.models.bus_models import (
     BusRequest,
     BusResponse,
+    BusScheduleRequest,
     GetBusResponse
 )
 from app.services.bus_service import BusService
@@ -44,7 +45,7 @@ async def get_all_buses(
 
 
 @router.get(
-    "{id}",
+    "/data/{id}",
     response_model=ApiResponse[GetBusResponse],
     status_code=status.HTTP_200_OK
 )
@@ -56,7 +57,7 @@ async def get_bus_by_id(
 
 
 @router.put(
-    "{id}",
+    "/data/{id}",
     response_model=ApiResponse[BusResponse],
     status_code=status.HTTP_200_OK
 )
@@ -69,7 +70,7 @@ async def update_bus_by_id(
 
 
 @router.delete(
-    "{id}",
+    "/data/{id}",
     response_model=ApiResponse[BusResponse],
     status_code=status.HTTP_200_OK
 )   
@@ -78,3 +79,15 @@ async def delete_bus_by_id(
     service: BusService = Depends(BusService)
 ) -> ApiResponse[BusResponse]:
     return ApiResponse(data=service.delete_bus_by_id(id))
+
+
+@router.post(
+    "/schedule",
+    response_model=ApiResponse[BusResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_bus(
+    request: BusScheduleRequest, 
+    service: BusService = Depends(BusService)
+) -> ApiResponse[BusResponse]:
+    return ApiResponse(data=service.create_bus_schedule(request))

@@ -26,3 +26,10 @@ class GetBusResponse(BaseModel):
     total_seats: int
     created_at: datetime
     is_active: bool
+
+
+class BusScheduleRequest(BaseModel):
+    bus_id: PositiveInt
+    route_id: PositiveInt
+    departure_time: datetime
+    arrival_time: datetime    

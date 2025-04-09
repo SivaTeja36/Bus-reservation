@@ -26,6 +26,8 @@ from app.models.branch_models import (
 )
 from app.utils.constants import (
     BRANCH_CREATED_SUCCESSFULLY,
+    BRANCH_NOT_FOUND,
+    BRANCH_UPDATED_SUCCESSFULLY,
     CITY_NAME_ALREADY_EXISTS, 
     DB_NOT_UPTODATE,
     DOMAIN_NAME_ALREADY_EXISTS
@@ -137,11 +139,47 @@ class BranchService:
         BranchService.__upgrade(schema, current_head)
 
         return BranchResponse(message=BRANCH_CREATED_SUCCESSFULLY)
-
-    def get_branch(self, id: int) -> Branch:
-        branch = self.db.query(Branch).filter(Branch.id == id).first() 
-        return mapper.to(GetBranchResponse).map(branch)
     
-    def get_all_branch(self) -> List[GetBranchResponse]:
+    def get_all_branches(self) -> List[GetBranchResponse]:
         branches = self.db.query(Branch).all() 
         return [mapper.to(GetBranchResponse).map(branch) for branch in branches]
+    
+    def get_branch_data_by_id(self, id: int) -> Branch:
+        branch = self.db.query(Branch).filter(Branch.id == id).first() 
+        return branch
+    
+    def validate_branch_exists(self, branch: Branch):
+        if not branch:
+            raise HTTPException(
+                status_code=404, 
+                detail=BRANCH_NOT_FOUND
+            )
+    
+    def get_branch_by_id(self, id: int) -> Branch:
+        branch = self.get_branch_data_by_id(id) 
+        self.validate_branch_exists(branch)
+        return mapper.to(GetBranchResponse).map(branch)
+    
+    def validate_branch_name_update(self, existing_branch_city: str, new_city_name: str) -> bool:
+        if existing_branch_city.lower() != new_city_name.lower():
+            self.validate_branch_name(new_city_name)
+
+    def validate_domain_name_update(self, existing_branch_domain: str, new_domain_name: str) -> bool:
+        if existing_branch_domain.lower() != new_domain_name.lower():
+            self.validate_domain_name(new_domain_name)        
+    
+    
+    def update_branch_by_id(self, id: int, request: BranchRequest) -> Branch:
+        branch = self.get_branch_data_by_id(id) 
+        self.validate_branch_exists(branch)
+        self.validate_branch_name_update(branch.city, request.city)
+        self.validate_domain_name_update(branch.domain_name, request.domain_name)
+
+        branch.city = request.city
+        branch.domain_name = request.domain_name
+        branch.logo_path = request.logo
+        branch.updated_at = sa.func.now()
+    
+        self.db.commit()
+
+        return BranchResponse(message=BRANCH_UPDATED_SUCCESSFULLY)

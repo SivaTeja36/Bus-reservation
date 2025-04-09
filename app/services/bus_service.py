@@ -12,9 +12,11 @@ from app.connectors.database_connector import (
     get_tenant_db
 )
 from app.entities.bus import Bus
+from app.entities.schedule import Schedule
 from app.models.bus_models import (
     BusRequest,
     BusResponse,
+    BusScheduleRequest,
     GetBusResponse
 )
 from app.utils.constants import (
@@ -22,6 +24,7 @@ from app.utils.constants import (
     BUS_CREATED_SUCCESSFULLY,
     BUS_DELETED_SUCCESSFULLY,
     BUS_NOT_FOUND,
+    BUS_SCHEDULE_CREATED_SUCCESSFULLY,
     BUS_UPDATED_SUCCESSFULLY
 )
 
@@ -135,3 +138,22 @@ class BusService:
         self.db.commit()
 
         return BusResponse(message=BUS_DELETED_SUCCESSFULLY)
+    
+    def create_bus_schedule(self, request: BusScheduleRequest) -> BusResponse:
+        """
+            Create a new bus schedule.
+        """
+        bus = self.get_bus_data_by_id(request.bus_id)
+        self.validate_bus_exists(bus)
+
+        schedule = Schedule(
+            bus_id=request.bus_id,
+            route_id=request.route_id,
+            departure_time=request.departure_time,
+            arrival_time=request.arrival_time
+        )
+        
+        self.db.add(schedule)
+        self.db.commit()
+
+        return BusResponse(message=BUS_SCHEDULE_CREATED_SUCCESSFULLY)
