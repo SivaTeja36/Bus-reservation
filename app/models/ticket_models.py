@@ -31,4 +31,3 @@ class GetTicketResponse(BaseModel):
     created_at: datetime 
     updated_at: datetime  
     bus_data: GetBusResponse
-    company_data: GetCompanyResponse

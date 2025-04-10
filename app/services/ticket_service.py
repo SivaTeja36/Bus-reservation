@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from automapper import mapper
 from fastapi import (
@@ -39,7 +40,7 @@ class TicketService:
         """
             Validate if a bus exists by its ID.
         """
-        bus = self.db.query(Ticket).filter(Ticket.bus_id == bus_id).first()
+        bus = self.db.query(Bus).filter(Bus.id == bus_id).first()
 
         if not bus:
             raise HTTPException(
@@ -57,9 +58,8 @@ class TicketService:
             .filter(Bus.id == bus_id)
             .first()
         )
-        company_name = company_name[:3].upper()  
-
-        year = func.now().year
+        company_name = company_name[0][:3].upper()  
+        year = datetime.now().year
         ticket_count = self.db.query(func.count(Ticket.id)).scalar() + 1
         return f"{company_name}{year}{ticket_count:07d}"    
 
@@ -104,15 +104,27 @@ class TicketService:
         responses = []
         for ticket in tickets:
             bus = bus_map.get(ticket.bus_id)
-            company = company_map.get(bus.company_id) 
-
-            bus_data = mapper.to(GetBusResponse).map(bus) 
-            company_data = mapper.to(GetCompanyResponse).map(company)
-
-            ticket_response = mapper.to(GetTicketResponse).map(ticket)
-            ticket_response.bus_data = bus_data
-            ticket_response.company_data = company_data
-
+            
+            ticket_response = GetTicketResponse(
+                id=ticket.id,
+                seat_number=ticket.seat_number,
+                passenger_name=ticket.passenger_name,
+                passenger_contact=ticket.passenger_contact,
+                passenger_email=ticket.passenger_email,
+                status=ticket.status,
+                created_at=ticket.created_at,
+                updated_at=ticket.updated_at,
+                bus_data=GetBusResponse(
+                    id=bus.id,
+                    company_id=bus.company_id,
+                    bus_number=bus.bus_number,
+                    bus_type=bus.bus_type,
+                    total_seats=bus.total_seats,
+                    created_at=bus.created_at,
+                    is_active=bus.is_active,
+                    company_data=mapper.to(GetCompanyResponse).map(company_map.get(bus.company_id))
+                )
+            )
             responses.append(ticket_response)
 
         return responses

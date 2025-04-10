@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import (
     BaseModel, 
     EmailStr
@@ -20,9 +21,9 @@ class GetCompanyResponse(BaseModel):
     id: int
     name: str 
     contact_person_name: str
-    email: EmailStr
+    email: str
     address: str 
     phone_number: str 
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
     is_active: bool

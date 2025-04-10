@@ -108,8 +108,16 @@ class BusService:
 
         bus_responses = []
         for bus in buses:
-            bus_response = mapper.to(GetBusResponse).map(bus)
-            bus_response.company_data = mapper.to(GetCompanyResponse).map(company_map.get(bus.company_id))
+            bus_response = GetBusResponse(
+                id=bus.id,
+                company_id=bus.company_id,
+                bus_number=bus.bus_number,
+                bus_type=bus.bus_type,
+                total_seats=bus.total_seats,
+                created_at=bus.created_at,
+                is_active=bus.is_active,
+                company_data=mapper.to(GetCompanyResponse).map(company_map.get(bus.company_id))
+            )
             bus_responses.append(bus_response)
             
         return bus_responses
