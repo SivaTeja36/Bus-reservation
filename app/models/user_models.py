@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import (
     BaseModel, 
     EmailStr,
@@ -23,6 +24,18 @@ class UserCreationRequest(BaseModel):
 
 class UserCreationResponse(BaseModel):
     message: str
+
+
+class GetUserResponse(BaseModel):
+    id: int 
+    name: str 
+    email: str 
+    contact: str 
+    role: str
+    branch_id: int 
+    created_at: datetime 
+    updated_at: datetime 
+    is_active: bool 
     
 
 class CurrentContextUser():

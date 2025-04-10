@@ -17,7 +17,7 @@ const Tickets = () => {
     queryKey: ['tickets'],
     queryFn: async () => {
       const response = await getTickets();
-      return response.data.data;
+      return response?.data?.data;
     },
   });
 
@@ -42,9 +42,9 @@ const Tickets = () => {
     { header: 'Status', accessor: 'status' },
     {
       header: 'Bus',
-      accessor: (ticket) => `${ticket.bus_data.bus_number} (${ticket.bus_data.bus_type})`,
+      accessor: (ticket : any) => `${ticket.bus_data.bus_number} (${ticket.bus_data.bus_type})`,
     },
-    { header: 'Company', accessor: (ticket) => ticket.company_data.name },
+    { header: 'Company', accessor: (ticket: any) => ticket.bus_data.company_data?.name },
   ];
 
   if (isLoading) {

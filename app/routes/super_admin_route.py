@@ -3,6 +3,7 @@ from typing import List
 from fastapi import (
     APIRouter, 
     Depends,
+    Request,
     status
 )
 
@@ -13,6 +14,7 @@ from app.models.branch_models import (
     GetBranchResponse
 )
 from app.models.user_models import (
+    GetUserResponse,
     UserCreationRequest, 
     UserCreationResponse
 )
@@ -80,3 +82,16 @@ async def create_user(
     service: UserService = Depends(UserService)
 ) -> ApiResponse[UserCreationResponse]:
     return ApiResponse(data=service.create_user(request))
+
+
+@router.get(
+    "/users", 
+    response_model=ApiResponse[List[GetUserResponse]], 
+    status_code=status.HTTP_201_CREATED
+)
+async def get_all_users(
+    request_state: Request, 
+    service: UserService = Depends(UserService)
+) -> ApiResponse[List[GetUserResponse]]:
+    branch_id = request_state.state.user.branch_id
+    return ApiResponse(data=service.get_all_users(branch_id))

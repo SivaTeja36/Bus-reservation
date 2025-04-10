@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from typing import List
 
+from automapper import mapper
 from fastapi import (
     Depends, 
     HTTPException
@@ -10,10 +12,15 @@ from sqlalchemy.orm import Session
 from app.connectors.database_connector import get_master_db
 from app.entities.user import User
 from app.models.user_models import (
+    GetUserResponse,
     UserCreationRequest, 
     UserCreationResponse
 )
-from app.utils.constants import A_USER_WITH_THIS_CONTACT_ALREADY_EXISTS, USER_CREATED_SUCCESSFULLY, USER_WITH_THIS_EMAIL_ALREADY_EXISTS
+from app.utils.constants import (
+    A_USER_WITH_THIS_CONTACT_ALREADY_EXISTS, 
+    USER_CREATED_SUCCESSFULLY, 
+    USER_WITH_THIS_EMAIL_ALREADY_EXISTS
+)
 
 
 @dataclass
@@ -77,5 +84,6 @@ class UserService:
 
         return UserCreationResponse(message=USER_CREATED_SUCCESSFULLY)
     
-    def get_all_users(self):
-        return self.db.query(User).all()
+    def get_all_users(self, branch_id: int) -> List[GetUserResponse]:
+         users = self.db.query(User).filter(User.branch_id == branch_id).all()
+         return [mapper.to(GetUserResponse).map(user) for user in users]
