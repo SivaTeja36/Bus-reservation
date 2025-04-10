@@ -45,6 +45,8 @@ services:
       LOG_LEVEL: "info"
       ACCESS_LOG: "./logfile.log"
       ERROR_LOG: "./error.log"
+    volumes:
+      - E:/Bus-reservation/frontend/dist:/app/frontend
     deploy:
       replicas: 1
       restart_policy:
