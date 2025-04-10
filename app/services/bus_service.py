@@ -13,12 +13,15 @@ from app.connectors.database_connector import (
 )
 from app.entities.bus import Bus
 from app.entities.company import Company
+from app.entities.route import Route
 from app.entities.schedule import Schedule
 from app.models.bus_models import (
     BusRequest,
     BusResponse,
     BusScheduleRequest,
-    GetBusResponse
+    GetBusResponse,
+    GetBusScheduleResponse,
+    GetRouteResponse
 )
 from app.models.company_models import GetCompanyResponse
 from app.utils.constants import (
@@ -27,8 +30,11 @@ from app.utils.constants import (
     BUS_DELETED_SUCCESSFULLY,
     BUS_NOT_FOUND,
     BUS_SCHEDULE_CREATED_SUCCESSFULLY,
+    BUS_SCHEDULE_DELETED_SUCCESSFULLY,
+    BUS_SCHEDULE_UPDATED_SUCCESSFULLY,
     BUS_UPDATED_SUCCESSFULLY,
-    COMPANY_NOT_FOUND
+    COMPANY_NOT_FOUND,
+    SCHEDULE_NOT_FOUND
 )
 
 
@@ -195,3 +201,79 @@ class BusService:
         self.db.commit()
 
         return BusResponse(message=BUS_SCHEDULE_CREATED_SUCCESSFULLY)
+    
+    def get_all_bus_schedules(self) -> list[GetBusScheduleResponse]:
+        """
+            Get all bus schedules from the database in ascending order of departure time.
+        """
+        schedules = self.db.query(Schedule).order_by(Schedule.departure_time.asc()).all()
+        bus_ids = {schedule.bus_id for schedule in schedules}
+        buses = self.db.query(Bus).filter(Bus.id.in_(bus_ids)).all()
+        bus_map = {bus.id: bus for bus in buses}
+
+        company_ids = {bus.company_id for bus in buses}
+        companies = self.db.query(Company).filter(Company.id.in_(company_ids)).all()
+        company_map = {company.id: company for company in companies}
+
+        route_ids = {schedule.route_id for schedule in schedules}
+        routes = self.db.query(Route).filter(Route.id.in_(route_ids)).all()
+        route_map = {route.id: route for route in routes}
+
+        schedule_responses = []
+        for schedule in schedules:
+            schedule_response = mapper.to(GetBusScheduleResponse).map(schedule)
+            bus = bus_map.get(schedule.bus_id)
+            schedule_response.bus_data = mapper.to(GetBusResponse).map(bus)
+
+            if bus:
+                schedule_response.bus_data.company_data = mapper.to(GetCompanyResponse).map(company_map.get(bus.company_id))
+
+            route = route_map.get(schedule.route_id)
+            if route:
+                schedule_response.route_data = mapper.to(GetRouteResponse).map(route)
+
+            schedule_responses.append(schedule_response)
+        
+        return schedule_responses
+    
+    def get_schedule_data_by_id(self, id: int):
+        return self.db.query(Schedule).filter(Schedule.id == id).first()
+    
+    def validate_schedule_exists(self, schedule: Schedule):
+        if not schedule:
+            raise HTTPException(
+                status_code=404,
+                detail=SCHEDULE_NOT_FOUND
+            )
+    
+    def update_bus_schedule_by_id(self, id: int, request: BusScheduleRequest) -> BusResponse:
+        """
+            Update an existing bus schedule by ID.
+        """
+        schedule = self.get_schedule_data_by_id(id)
+        self.validate_schedule_exists(schedule)
+        
+        bus = self.get_bus_data_by_id(request.bus_id)
+        self.validate_bus_exists(bus)
+
+        schedule.bus_id = request.bus_id
+        schedule.route_id = request.route_id
+        schedule.departure_time = request.departure_time
+        schedule.arrival_time = request.arrival_time
+        schedule.updated_at = func.now()
+
+        self.db.commit()
+
+        return BusResponse(message=BUS_SCHEDULE_UPDATED_SUCCESSFULLY)
+
+    def delete_bus_schedule_by_id(self, id: int) -> BusResponse:
+        """
+            Delete a bus schedule by ID.
+        """
+        schedule = self.get_schedule_data_by_id(id)
+        self.validate_schedule_exists(schedule)
+        
+        self.db.delete(schedule)
+        self.db.commit()
+
+        return BusResponse(message=BUS_SCHEDULE_DELETED_SUCCESSFULLY)

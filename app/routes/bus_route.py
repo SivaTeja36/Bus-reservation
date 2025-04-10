@@ -11,7 +11,8 @@ from app.models.bus_models import (
     BusRequest,
     BusResponse,
     BusScheduleRequest,
-    GetBusResponse
+    GetBusResponse,
+    GetBusScheduleResponse
 )
 from app.services.bus_service import BusService
 
@@ -82,7 +83,7 @@ async def delete_bus_by_id(
 
 
 @router.post(
-    "/schedule",
+    "/schedules",
     response_model=ApiResponse[BusResponse],
     status_code=status.HTTP_201_CREATED,
 )
@@ -91,3 +92,39 @@ async def create_bus_schedule(
     service: BusService = Depends(BusService)
 ) -> ApiResponse[BusResponse]:
     return ApiResponse(data=service.create_bus_schedule(request))
+
+
+@router.get(
+    "/schedules",
+    response_model=ApiResponse[GetBusScheduleResponse],
+    status_code=status.HTTP_201_CREATED,
+)
+async def get_all_bus_schedules(
+    service: BusService = Depends(BusService)
+) -> ApiResponse[GetBusScheduleResponse]:
+    return ApiResponse(data=service.get_all_bus_schedules())
+
+
+@router.put(
+    "/schedules/{id}",
+    response_model=ApiResponse[BusResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def update_bus_schedule_by_id(
+    id: PositiveInt,
+    request: BusScheduleRequest, 
+    service: BusService = Depends(BusService)
+) -> ApiResponse[BusResponse]:
+    return ApiResponse(data=service.update_bus_schedule_by_id(id, request))
+
+
+@router.delete(
+    "/schedules/{id}",
+    response_model=ApiResponse[BusResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def delete_bus_schedule_by_id(
+    id: PositiveInt,
+    service: BusService = Depends(BusService)
+) -> ApiResponse[BusResponse]:
+    return ApiResponse(data=service.delete_bus_schedule_by_id(id))

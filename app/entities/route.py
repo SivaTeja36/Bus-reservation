@@ -11,6 +11,6 @@ class Route(Base):
 
     id: int = sa.Column(sa.Integer, primary_key=True, nullable=False) 
     stops: list = sa.Column(JSON, nullable=False) 
-    source: int = sa.Column(sa.String(50), nullable=False) 
+    source: str = sa.Column(sa.String(50), nullable=False) 
     destination: str = sa.Column(sa.String(50), nullable=False)
     created_at: datetime = sa.Column(sa.DateTime, nullable=False, default=sa.func.now())
