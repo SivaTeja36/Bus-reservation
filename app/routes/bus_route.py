@@ -96,12 +96,12 @@ async def create_bus_schedule(
 
 @router.get(
     "/schedules",
-    response_model=ApiResponse[GetBusScheduleResponse],
+    response_model=ApiResponse[List[GetBusScheduleResponse]],
     status_code=status.HTTP_201_CREATED,
 )
 async def get_all_bus_schedules(
     service: BusService = Depends(BusService)
-) -> ApiResponse[GetBusScheduleResponse]:
+) -> ApiResponse[List[GetBusScheduleResponse]]:
     return ApiResponse(data=service.get_all_bus_schedules())
 
 

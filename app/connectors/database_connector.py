@@ -71,7 +71,7 @@ def get_tenant_db(request: Request):
     master_db = get_master_database()
 
     result = master_db.execute(
-        sa.text("SELECT schema FROM branches WHERE id='" + branch_id + "';")
+        sa.text("SELECT schema FROM branches WHERE id='" + str(branch_id) + "';")
     ).fetchall()
 
     master_db.close()

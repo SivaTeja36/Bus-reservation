@@ -52,8 +52,7 @@ async def verify_auth_token(request: Request):
         auth: str = request.headers.get(AUTHORIZATION) or ""
         
         try:
-            token = auth.strip().rsplit(".", 1)[0]
-            request.state.user = __verify_jwt(token=token)
+            request.state.user = __verify_jwt(token=auth)
         except Exception as e:
             raise HTTPException(
                 status_code=401,
