@@ -155,12 +155,27 @@ class TicketService:
         bus = self.db.query(Bus).filter(Bus.id == ticket.bus_id).first()
         company = self.db.query(Company).filter(Company.id == bus.company_id).first()
 
-        bus_data = mapper.to(GetBusResponse).map(bus)
-        company_data = mapper.to(GetCompanyResponse).map(company)
+        ticket_response = GetTicketResponse(
+            id=ticket.id, 
+            seat_number=ticket.seat_number,
+            passenger_name=ticket.passenger_name,
+            passenger_contact=ticket.passenger_contact, 
+            passenger_email=ticket.passenger_email, 
+            status=ticket.status, 
+            created_at=ticket.created_at,
+            updated_at=ticket.updated_at,  
+            bus_data=GetBusResponse(
+                id=bus.id,
+                company_id=bus.company_id,
+                bus_number=bus.bus_number,
+                bus_type=bus.bus_type,
+                total_seats=bus.total_seats,
+                created_at=bus.created_at,
+                is_active=bus.is_active,
+                company_data=mapper.to(GetCompanyResponse).map(company)
+            )
 
-        ticket_response = mapper.to(GetTicketResponse).map(ticket)
-        ticket_response.bus_data = bus_data
-        ticket_response.company_data = company_data
+        )
 
         return ticket_response
     

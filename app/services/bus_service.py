@@ -146,11 +146,17 @@ class BusService:
         self.validate_bus_exists(bus)
 
         company = self.db.query(Company).filter(Company.id == bus.company_id).first()
-
-        bus_response = mapper.to(GetBusResponse).map(bus)
-        bus_response.company_data = mapper.to(GetCompanyResponse).map(company)
-
-        return bus_response
+        
+        return GetBusResponse(
+            id=bus.id,
+            company_id=bus.company_id,
+            bus_number=bus.bus_number,
+            bus_type=bus.bus_type,
+            total_seats=bus.total_seats,
+            created_at=bus.created_at,
+            is_active=bus.is_active,
+            company_data= mapper.to(GetCompanyResponse).map(company)
+        )
     
     def validate_update_bus_number(self, existing_bus_number: str, new_bus_number: str):
         """
@@ -229,17 +235,30 @@ class BusService:
 
         schedule_responses = []
         for schedule in schedules:
-            schedule_response = mapper.to(GetBusScheduleResponse).map(schedule)
             bus = bus_map.get(schedule.bus_id)
-            schedule_response.bus_data = mapper.to(GetBusResponse).map(bus)
+            company = mapper.to(GetCompanyResponse).map(company_map.get(bus.company_id)) 
+            route = mapper.to(GetRouteResponse).map(route_map.get(schedule.route_id))
 
-            if bus:
-                schedule_response.bus_data.company_data = mapper.to(GetCompanyResponse).map(company_map.get(bus.company_id))
-
-            route = route_map.get(schedule.route_id)
-            if route:
-                schedule_response.route_data = mapper.to(GetRouteResponse).map(route)
-
+            schedule_response = GetBusScheduleResponse(
+                id=schedule.id,
+                bus_id=schedule.bus_id, 
+                route_id=schedule.route_id, 
+                departure_time=schedule.departure_time,
+                arrival_time=schedule.arrival_time, 
+                created_at=schedule.created_at,
+                updated_at=schedule.updated_at,
+                bus_data=GetBusResponse(
+                    id=bus.id,
+                    company_id=bus.company_id,
+                    bus_number=bus.bus_number,
+                    bus_type=bus.bus_type,
+                    total_seats=bus.total_seats,
+                    created_at=bus.created_at,
+                    is_active=bus.is_active,
+                    company_data=company
+                ),
+                route_data=route
+            )
             schedule_responses.append(schedule_response)
         
         return schedule_responses
